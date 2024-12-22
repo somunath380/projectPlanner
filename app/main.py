@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes.user import user_router
 from routes.team import teams_router
+from routes.project import projects_router
 
 load_dotenv()
 
@@ -19,3 +20,4 @@ app.add_middleware(
 )
 app.include_router(user_router, prefix="/api/v1")
 app.include_router(teams_router, prefix="/api/v1")
+app.include_router(projects_router, prefix="/api/v1")

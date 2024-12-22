@@ -1,10 +1,16 @@
-class ProjectBoardBase:
+from abc import abstractmethod
+from typing import List
+
+from schemas.project import *
+
+class ProjectInterface:
     """
     A project board is a unit of delivery for a project. Each board will have a set of tasks assigned to a user.
     """
 
     # create a board
-    def create_board(self, request: str):
+    @abstractmethod
+    def create_board(self, data: ProjectCreateRequestSchema) -> ProjectCreateResponseSchema:
         """
         :param request: A json string with the board details.
         {
@@ -23,9 +29,10 @@ class ProjectBoardBase:
         pass
 
     # close a board
-    def close_board(self, request: str) -> str:
+    @abstractmethod
+    def close_board(self, id: GetProjectDetailsRequestSchema):
         """
-        :param request: A json string with the user details
+        :param request: A json string with the board details
         {
           "id" : "<board_id>"
         }
@@ -39,11 +46,13 @@ class ProjectBoardBase:
         pass
 
     # add task to board
-    def add_task(self, request: str) -> str:
+    @abstractmethod
+    def add_task(self, data: AddTaskRequestSchema) -> AddTaskResponseSchema:
         """
         :param request: A json string with the task details. Task is assigned to a user_id who works on the task
         {
             "title" : "<board_name>",
+            "task_title": "<task_name>"
             "description" : "<description>",
             "user_id" : "<team id>"
             "creation_time" : "<date:time when task was created>"
@@ -61,7 +70,8 @@ class ProjectBoardBase:
         pass
 
     # update the status of a task
-    def update_task_status(self, request: str):
+    @abstractmethod
+    def update_task_status(self, task_data: TaskStatusUpdateRequestSchema):
         """
         :param request: A json string with the user details
         {
@@ -72,7 +82,8 @@ class ProjectBoardBase:
         pass
 
     # list all open boards for a team
-    def list_boards(self, request: str) -> str:
+    @abstractmethod
+    def list_boards(self, id: TeamIdRequestSchema) -> List[ListBoardResponseSchema]:
         """
         :param request: A json string with the team identifier
         {
@@ -88,8 +99,9 @@ class ProjectBoardBase:
         ]
         """
         pass
-
-    def export_board(self, request: str) -> str:
+    
+    @abstractmethod
+    def export_board(self, id: GetProjectDetailsRequestSchema):
         """
         Export a board in the out folder. The output will be a txt file.
         We want you to be creative. Output a presentable view of the board and its tasks with the available data.

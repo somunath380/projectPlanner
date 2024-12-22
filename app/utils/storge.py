@@ -2,12 +2,23 @@ import json
 from pathlib import Path
 from typing import Any, List, Dict
 import os
+from enum import Enum
 import aiofiles
-from datetime import datetime
+from datetime import datetime, timezone
 
 utils_dir = os.path.dirname(os.path.abspath(__file__))
 app_dir = os.path.dirname(utils_dir)
 db_dir = os.path.join(app_dir, 'db')
+
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Enum):
+            return obj.value
+        if isinstance(obj, datetime):
+            if obj.tzinfo is None:
+                obj = obj.replace(tzinfo=timezone.utc)
+            return obj.isoformat()
+        return super().default(obj)
 
 def datetime_to_string(obj):
     if isinstance(obj, datetime):
@@ -47,7 +58,7 @@ async def save_data(file_name: str, data: list[Any]):
             print(f"file {file_name} doesn't exists, creating file")
             await create_file(file_name)
         async with aiofiles.open(path, mode="w") as file:
-            content = json.dumps(data, default=datetime_to_string, indent=4)
+            content = json.dumps(data, cls=CustomJSONEncoder, indent=4)
             await file.write(content)
             return True
     except Exception as exe:
@@ -73,7 +84,7 @@ async def update_data(file_name: str, updated_data: Any, id: int):
             print(f"content with id {id} not found.")
             raise Exception(f"content with id {id} not found.")
         async with aiofiles.open(path, mode='w') as file:
-            await file.write(json.dumps(data, indent=4))
+            await file.write(json.dumps(data, cls=CustomJSONEncoder, indent=4))
         return found
     except Exception as exe:
         print(f"Error occured while saving data: {str(exe)}")

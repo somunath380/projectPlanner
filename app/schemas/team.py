@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, field_validator
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import List, Optional, Text
 
 def get_utc_now():
     return datetime.now(timezone.utc)
@@ -11,6 +11,7 @@ class UsersOfTeam(BaseModel):
 
 class ProjectsOfTeam(BaseModel):
     id: int
+    name: Text = Field(..., min_length=4, frozen=True, max_length=64)
 
 class TeamBase(BaseModel):
     id: int
