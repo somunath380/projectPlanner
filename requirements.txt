@@ -1,0 +1,5 @@
+#Add the project dependencies to this file
+fastapi[standard]
+fastapi_utils
+aiofiles
+asyncio
